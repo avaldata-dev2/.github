@@ -2,13 +2,19 @@
 
 このリポジトリでは、Pull Request に対して SBOM 生成および Grype による脆弱性スキャンを自動実行する GitHub Actions を設定しています。
 
+---
+
 ## 対象ブランチ
 
 - `develop` ブランチへの Pull Request 時に自動実行されます。
 
+---
+
 ## 使用ワークフロー
 
 - `.github/workflows/sbom-grype.yml`
+
+---
 
 ## 処理内容
 
@@ -26,6 +32,8 @@
    - `grype-results.sarif`（SARIF形式）
    - `grype-results.txt`（テキスト形式）
 
+---
+
 ## 成果物の確認方法
 
 PRページの **Actionsタブ → 該当ジョブ** にアクセスし、以下を確認できます：
@@ -36,10 +44,43 @@ PRページの **Actionsタブ → 該当ジョブ** にアクセスし、以下
   - `grype-sarif`（SARIF形式）
   - `grype-table`（grype結果テキスト）
 
+---
+
 ## 注意事項
 
 - スキャンで脆弱性が検出されても **CIは失敗しません**（`fail-build: false`）
 - 脆弱性の深刻度などは `grype-results.txt` を確認してください
+
+---
+
+## 導入方法（自分のリポジトリで使うには）
+
+このワークフローを再利用するには、対象リポジトリの `.github/workflows/` に以下のようなワークフローファイルを作成してください：
+
+```yaml
+# .github/workflows/sbom.yml
+
+name: SBOM Scan
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  sbom-grype:
+    uses: avaldata-dev2/.github/.github/workflows/sbom-grype.yml@main
+    secrets: inherit
+```
+
+### 注意点：
+
+- `uses:` のオーガナイゼーション名（例：`avaldata-dev2`）は必要に応じて置き換えてください
+- `@main` は `.github` リポジトリのブランチ名。タグ参照も可能です
+- `secrets: inherit` により、親リポジトリの Secrets を共有できます
+- 既に他の `pull_request` ワークフローがある場合は、併用に注意してください
+
+---
 
 ## 参考リンク
 
